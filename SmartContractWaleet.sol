@@ -42,6 +42,19 @@ contract SmartContractWallet {
         }
     }
 
+	function setAllowance(address _for, uint _amount) public {
+		require(msg.sender == owner, "You are not the owner, aborting!!!");
+
+		allowance[_for] = _amount;
+
+		if(_amount > 0){
+			isAllowedToSend[_for] = true;
+		}
+		else{
+			isAllowedToSend[_for] = false;
+		}
+	}
+
     function transfer(address payable _to, uint memory _amount, bytes memory _payload) public {
         require(msg.sender == owner, "You are not the owner, aborting!!!");
 
@@ -52,10 +65,10 @@ contract SmartContractWallet {
             allowance[msg.sender] -= _amount;
         }
 
-        (bool success, bytes memory returnData) = _to.call{value:_amount}(_payload);   
-    
+        (bool success, bytes memory returnData) = _to.call{value:_amount}(_payload);
+
         require(success, "Aborting, call was not successful");
-    
+
         return returnData;
     }
 
